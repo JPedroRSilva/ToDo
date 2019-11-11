@@ -48,7 +48,7 @@ public abstract class TaskDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            LocalDateTime time = LocalDateTime.of(20200, 1, 1, 0, 0);
+            LocalDateTime time = LocalDateTime.now();
             taskDao.insert(new Task("Example" , "Description", time));
             return null;
         }
