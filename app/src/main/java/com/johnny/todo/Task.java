@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 
 @Entity(tableName = "task_table")
 public class Task {
-    @PrimaryKey
+
+    @PrimaryKey(autoGenerate = true)
     private int id;
 
     private String title;
