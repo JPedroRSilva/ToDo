@@ -1,9 +1,12 @@
 package com.johnny.todo;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import java.util.List;
 
 public interface TaskDao {
 
@@ -20,5 +23,5 @@ public interface TaskDao {
     void deleteAllTasks();
 
     @Query("SELECT * FROM task_table ORDER BY datetime(time) DESC")
-    void getAllNotes();
+    LiveData<List<Task>> getAllTasks();
 }
