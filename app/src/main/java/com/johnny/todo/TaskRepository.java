@@ -9,6 +9,7 @@ import java.util.List;
 
 public class TaskRepository {
 
+    //Comentario só para dar commit com uma mensagem mais descritiva
     private TaskDao taskDao;
     private LiveData<List<Task>> allTasks;
 
