@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity(tableName = "task_table")
 public class Task {
@@ -27,6 +28,10 @@ public class Task {
         this.id = id;
     }
 
+    public int getId(){
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -37,5 +42,10 @@ public class Task {
 
     public LocalDateTime getTime() {
         return time;
+    }
+
+    public String timeToFormatedString(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, dd/MM/yyyy 'at' HH:mm");
+        return this.time.format(formatter);
     }
 }
