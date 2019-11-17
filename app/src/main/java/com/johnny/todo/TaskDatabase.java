@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.time.LocalDateTime;
 
-import static java.time.ZoneId.systemDefault;
+import static com.johnny.todo.LocalDateTimeConverter.toDateString;
 
 @Database(entities = {Task.class}, version = 1, exportSchema = false)
 public abstract class TaskDatabase extends RoomDatabase {
@@ -49,7 +49,7 @@ public abstract class TaskDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(Void... voids) {
             LocalDateTime time = LocalDateTime.now();
-            taskDao.insert(new Task("Example" , "Description", time));
+            taskDao.insert(new Task("Example" , "Description", toDateString(time)));
             return null;
         }
     }

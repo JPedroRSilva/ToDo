@@ -11,18 +11,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.johnny.todo.LocalDateTimeConverter.toDate;
+import static com.johnny.todo.LocalDateTimeConverter.toDateString;
 
 public class MainActivity extends AppCompatActivity {
     private TaskViewModel taskViewModel;
 
     public static final int ADD_TASK_REQUEST = 1;
-    public static final int EDIT_TASK_REQUEST = 1;
+    public static final int EDIT_TASK_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         buttonAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
+                startActivityForResult(intent, ADD_TASK_REQUEST);
             }
         });
 
@@ -62,14 +70,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 taskViewModel.delete(adapter.getTaskAt(viewHolder.getAdapterPosition()));
-                Toast.makeText(MainActivity.this, "Tasks deleted", Toast.LENGTH_SHORT);
+                Toast.makeText(MainActivity.this, "Tasks deleted", Toast.LENGTH_SHORT).show();
             }
         }).attachToRecyclerView(recyclerView);
 
         adapter.setOnClickListener(new TaskAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Task task) {
-
+                Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
+                intent.putExtra(AddEditTaskActivity.EXTRA_ID, task.getId());
+                intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.getTitle());
+                intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
+                intent.putExtra(AddEditTaskActivity.EXTRA_TIME, toDate(task.getTime()));
+                startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });
     }
@@ -79,7 +92,50 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == ADD_TASK_REQUEST && resultCode == RESULT_OK){
-            String title;
+            String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
+            String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
+            LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
+
+            Task task = new Task(title, description, toDateString(time));
+            taskViewModel.insert(task);
+        }else if(requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK){
+            int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
+
+            if(id == -1){
+                Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
+            String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
+            LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
+
+            Task task = new Task(title, description, toDateString(time));
+            task.setId(id);
+            taskViewModel.update(task);
+            Toast.makeText(this, "Task Updated", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(this, "Task not updated", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.mainmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.delete_all_tasks:
+                taskViewModel.deleteAllTasks();
+                Toast.makeText(this, "All tasks deleted", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
