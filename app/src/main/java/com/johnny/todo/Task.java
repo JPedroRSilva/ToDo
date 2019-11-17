@@ -4,6 +4,11 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+
+import static com.johnny.todo.LocalDateTimeConverter.toDate;
+import static com.johnny.todo.LocalDateTimeConverter.toDateString;
 
 @Entity(tableName = "task_table")
 public class Task {
@@ -15,9 +20,9 @@ public class Task {
 
     private String description;
 
-    private LocalDateTime time;
+    private String time;
 
-    public Task(String title, String description, LocalDateTime time) {
+    public Task(String title, String description, String time) {
         this.title = title;
         this.description = description;
         this.time = time;
@@ -25,6 +30,10 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getId(){
+        return id;
     }
 
     public String getTitle() {
@@ -35,7 +44,13 @@ public class Task {
         return description;
     }
 
-    public LocalDateTime getTime() {
-        return time;
+    public String getTime() {
+        return this.time;
+    }
+
+    public String timeToFormatedString(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, dd/MM/yyyy 'at' HH:mm");
+        LocalDateTime formatedTime = toDate(this.time);
+        return formatter.format(formatedTime);
     }
 }
