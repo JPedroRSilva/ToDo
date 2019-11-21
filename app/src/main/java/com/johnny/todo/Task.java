@@ -22,14 +22,21 @@ public class Task {
 
     private String time;
 
-    public Task(String title, String description, String time) {
+    private boolean alarmOn;
+
+    public Task(String title, String description, String time, boolean alarmOn) {
         this.title = title;
         this.description = description;
         this.time = time;
+        this.alarmOn = alarmOn;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setAlarmOn(boolean alarmOn) {
+        this.alarmOn = alarmOn;
     }
 
     public int getId(){
@@ -46,6 +53,10 @@ public class Task {
 
     public String getTime() {
         return this.time;
+    }
+
+    public boolean isAlarmOn() {
+        return alarmOn;
     }
 
     public String timeToFormatedString(){
