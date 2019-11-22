@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             Task task = new Task(title, description, toDateString(time), alarmOn);
             task.setId(id);
             taskViewModel.update(task);
-            Toast.makeText(this, "Task Updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Task Updated" , Toast.LENGTH_SHORT).show();
         }
         else{
             Toast.makeText(this, "Task not updated", Toast.LENGTH_SHORT).show();

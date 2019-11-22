@@ -105,9 +105,9 @@ public class AddEditTaskActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         String date = dayOfMonth + "/" + (month+1) + "/" + year;
-                        tempTime.withDayOfMonth(dayOfMonth);
-                        tempTime.withMonth(month+1);
-                        tempTime.withYear(year);
+                        tempTime = tempTime.withDayOfMonth(dayOfMonth);
+                        tempTime = tempTime.withMonth(month+1);
+                        tempTime = tempTime.withYear(year);
                         datePicker.setText(date);
                     }
                 }, year, month-1, day);
@@ -133,8 +133,8 @@ public class AddEditTaskActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         String time = hourOfDay + "h:" + minute;
-                        tempTime.withHour(hourOfDay);
-                        tempTime.withMinute(minute);
+                        tempTime = tempTime.withHour(hourOfDay);
+                        tempTime = tempTime.withMinute(minute);
                         timePicker.setText(time);
                     }
                 }, hours, minutes, true);
@@ -147,17 +147,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
     private void saveTask(){
         String title = editTextTile.getText().toString();
         String description = editTextDescription.getText().toString();
-        LocalDateTime time = LocalDateTime.now();
         boolean alarmOn = reminderSwitch.isChecked();
-        if(alarmOn){
-            int year, month, day, hour, minute;
-            year = tempTime.getYear();
-            month = tempTime.getMonthValue();
-            day = tempTime.getDayOfMonth();
-            hour = tempTime.getHour();
-            minute = tempTime.getMinute();
-            time = LocalDateTime.of(year, month, day, hour, minute);
-        }
 
         if(title.trim().isEmpty()){
             Toast.makeText(this, "Please insert a title",Toast.LENGTH_SHORT).show();
@@ -167,7 +157,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
         Intent data = new Intent();
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_DESCRIPTION, description);
-        data.putExtra(EXTRA_TIME, time);
+        data.putExtra(EXTRA_TIME, tempTime);
         data.putExtra(EXTRA_ALARM, alarmOn);
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if(id != -1){
