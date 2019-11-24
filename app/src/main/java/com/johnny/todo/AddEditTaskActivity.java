@@ -29,6 +29,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
     public static final String EXTRA_DESCRIPTION = "com.johnny.todo.EXTRA_DESCRIPTION";
     public static final String EXTRA_TIME = "com.johnny.todo.EXTRA_TIME";
     public static final String EXTRA_ALARM = "com.johnny.todo.EXTRA_ALARM";
+    public static final String EXTRA_CHANGED = "com.johnny.todo.EXTRA_CHANGED";
 
     private EditText editTextTile;
     private EditText editTextDescription;
@@ -36,7 +37,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
     private TextView datePicker;
     private TextView timePicker;
     private LocalDateTime tempTime;
-
+    private boolean reminderOriginal;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +56,9 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
 
-        if(!intent.getBooleanExtra(EXTRA_ALARM, false)){
+        reminderOriginal = intent.getBooleanExtra(EXTRA_ALARM, false);
+
+        if(!reminderOriginal){
             datePicker.setVisibility(View.INVISIBLE);
             timePicker.setVisibility(View.INVISIBLE);
         }
@@ -117,6 +120,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
                     }
                 }, year, month-1, day);
                 datePickerDialog.setTitle("Select date");
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });
@@ -142,7 +146,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
                         tempTime = tempTime.withMinute(minute);
                         timePicker.setText(time);
                     }
-                }, hours, minutes, true);
+                }, hours, minutes+1, true);
                 timePickerDialog.setTitle("Select hour and minutes");
                 timePickerDialog.show();
             }
@@ -164,6 +168,9 @@ public class AddEditTaskActivity extends AppCompatActivity {
         data.putExtra(EXTRA_DESCRIPTION, description);
         data.putExtra(EXTRA_TIME, tempTime);
         data.putExtra(EXTRA_ALARM, alarmOn);
+        if(alarmOn == reminderOriginal){
+            data.putExtra(EXTRA_CHANGED, true);
+        }
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if(id != -1){
             data.putExtra(EXTRA_ID, id);
