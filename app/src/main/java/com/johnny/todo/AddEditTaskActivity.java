@@ -70,6 +70,11 @@ public class AddEditTaskActivity extends AppCompatActivity {
             timePicker.setText(hours);
         }else{
             setTitle("Add Task");
+            LocalDateTime temp = LocalDateTime.now();
+            String hours = temp.getHour() + "h: " + temp.getMinute()+ "m";
+            String date = temp.getDayOfMonth() + "/" + temp.getMonthValue()+ "/" + temp.getYear();
+            datePicker.setText(date);
+            timePicker.setText(hours);
         }
         reminderSwitch.setChecked(intent.getBooleanExtra(EXTRA_ALARM, false));
         reminderSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
