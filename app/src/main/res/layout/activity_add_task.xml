@@ -33,13 +33,13 @@
         android:layout_height="wrap_content"
         android:gravity="end"/>
 
-    <TimePicker
+    <TextView
         android:id="@+id/time_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="bottom" />
 
-    <DatePicker
+    <TextView
         android:id="@+id/date_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

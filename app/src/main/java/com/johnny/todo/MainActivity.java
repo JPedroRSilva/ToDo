@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 taskViewModel.delete(adapter.getTaskAt(viewHolder.getAdapterPosition()));
-                Toast.makeText(MainActivity.this, "Tasks deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Task deleted", Toast.LENGTH_SHORT).show();
             }
         }).attachToRecyclerView(recyclerView);
 
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.getTitle());
                 intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
                 intent.putExtra(AddEditTaskActivity.EXTRA_TIME, toDate(task.getTime()));
+                intent.putExtra(AddEditTaskActivity.EXTRA_ALARM, task.isAlarmOn());
+                Toast.makeText(MainActivity.this, String.valueOf(task.isAlarmOn()), Toast.LENGTH_SHORT).show();
                 startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });
@@ -95,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
-
-            Task task = new Task(title, description, toDateString(time));
+            boolean alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
+            Task task = new Task(title, description, toDateString(time), alarmOn);
             taskViewModel.insert(task);
         }else if(requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK){
             int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
@@ -109,11 +112,11 @@ public class MainActivity extends AppCompatActivity {
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
-
-            Task task = new Task(title, description, toDateString(time));
+            boolean alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
+            Task task = new Task(title, description, toDateString(time), alarmOn);
             task.setId(id);
             taskViewModel.update(task);
-            Toast.makeText(this, "Task Updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Task Updated" , Toast.LENGTH_SHORT).show();
         }
         else{
             Toast.makeText(this, "Task not updated", Toast.LENGTH_SHORT).show();

@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -28,7 +29,8 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         public boolean areContentsTheSame(@NonNull Task oldItem, @NonNull Task newItem) {
             return oldItem.getTitle().equals(newItem.getTitle()) &&
                     oldItem.getDescription().equals(newItem.getDescription()) &&
-                    oldItem.getTime().equals(newItem.getTime());
+                    oldItem.getTime().equals(newItem.getTime()) &&
+                    (oldItem.isAlarmOn()==newItem.isAlarmOn());
         }
     };
 
@@ -45,7 +47,11 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         Task currentTask = getItem(position);
         holder.textViewTitle.setText(currentTask.getTitle());
         holder.textViewDescrition.setText(currentTask.getDescription());
-        holder.textViewTime.setText(currentTask.timeToFormatedString());
+        if(currentTask.isAlarmOn()) {
+            holder.textViewTime.setText(currentTask.timeToFormatedString());
+        }else{
+            holder.textViewTime.setText("");
+        }
     }
 
     class TaskHolder extends RecyclerView.ViewHolder{
