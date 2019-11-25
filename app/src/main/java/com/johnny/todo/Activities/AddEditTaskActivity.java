@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -19,6 +19,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.johnny.todo.R;
 
 import java.time.LocalDateTime;
 
@@ -160,6 +162,11 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
         if(title.trim().isEmpty()){
             Toast.makeText(this, "Please insert a title",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(alarmOn && tempTime.isBefore(LocalDateTime.now())){
+            Toast.makeText(this, "Please choose a time and date in the future", Toast.LENGTH_SHORT).show();
             return;
         }
 

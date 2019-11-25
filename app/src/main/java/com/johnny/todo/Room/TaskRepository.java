@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Room;
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -7,9 +7,10 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-public class TaskRepository {
+public class TaskRepository{
 
     //Comentario só para dar commit com uma mensagem mais descritiva
+
     private TaskDao taskDao;
     private LiveData<List<Task>> allTasks;
 
@@ -19,8 +20,15 @@ public class TaskRepository {
         allTasks = taskDao.getAllTasks();
     }
 
-    public void insert(Task task){
-        new InsertTaskAsyncTask(taskDao).execute(task);
+    public long insert(Task task){
+        long id;
+        try {
+            id =  new InsertTaskAsyncTask(taskDao).execute(task).get();
+            return id;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public void update(Task task){
@@ -39,7 +47,7 @@ public class TaskRepository {
         return allTasks;
     }
 
-    private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Void>{
+    private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Long>{
         private TaskDao taskDao;
 
         private  InsertTaskAsyncTask(TaskDao taskDao){
@@ -47,9 +55,13 @@ public class TaskRepository {
         }
 
         @Override
-        protected Void doInBackground(Task... tasks) {
-            taskDao.insert(tasks[0]);
-            return null;
+        protected Long doInBackground(Task... tasks) {
+            return taskDao.insert(tasks[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
         }
     }
 

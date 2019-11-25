@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +22,17 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.johnny.todo.Notifications.ReminderReceiver;
+import com.johnny.todo.R;
+import com.johnny.todo.Room.Task;
+import com.johnny.todo.Room.TaskViewModel;
+import com.johnny.todo.Adapters.TaskAdapter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static com.johnny.todo.LocalDateTimeConverter.toDate;
-import static com.johnny.todo.LocalDateTimeConverter.toDateString;
+import static com.johnny.todo.Room.LocalDateTimeConverter.toDate;
+import static com.johnny.todo.Room.LocalDateTimeConverter.toDateString;
 
 public class MainActivity extends AppCompatActivity {
     private TaskViewModel taskViewModel;
@@ -37,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int EDIT_TASK_REQUEST = 2;
 
     public static final String Notification_Description = "com.johnny.todo.NOTIFICATION_DESCRIPTION";
-    public static final String Notification_title = "com.johnny.todo.NOTIFICATION_TITLE";
+    public static final String Notification_Title = "com.johnny.todo.NOTIFICATION_TITLE";
+    public static final String Notification_Id = "com.johnny.todo.NOTIFICATION_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
+
 
         final TaskAdapter adapter = new TaskAdapter();
         recyclerView.setAdapter(adapter);
@@ -84,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 taskViewModel.delete(task);
                 Toast.makeText(MainActivity.this, "Task deleted", Toast.LENGTH_SHORT).show();
             }
+
+
         }).attachToRecyclerView(recyclerView);
 
         adapter.setOnClickListener(new TaskAdapter.OnItemClickListener() {
@@ -110,10 +118,9 @@ public class MainActivity extends AppCompatActivity {
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
             boolean alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
-            Task task = new Task(title, description, toDateString(time), alarmOn);
-            taskViewModel.insert(task);
+            final Task task = new Task(title, description, toDateString(time), alarmOn);
+            int id = (int) taskViewModel.insert(task);
             if(alarmOn){
-                int id = task.getId();
                 setReminder(id, time, title, description);
             }
         }else if(requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK){
@@ -145,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -164,11 +173,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setReminder(int id, LocalDateTime reminder, String title , String description){
+    public void setReminder(long Lid, LocalDateTime reminder, String title , String description){
+        int id = (int) Lid;
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, ReminderReceiver.class);
-        intent.putExtra(Notification_title, title);
+        intent.putExtra(Notification_Title, title);
         intent.putExtra(Notification_Description, description);
+        intent.putExtra(Notification_Id, id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli(), pendingIntent);

@@ -1,16 +1,17 @@
-package com.johnny.todo;
+package com.johnny.todo.Adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.johnny.todo.R;
+import com.johnny.todo.Room.Task;
 
 public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     private OnItemClickListener listener;
@@ -32,6 +33,8 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
                     oldItem.getTime().equals(newItem.getTime()) &&
                     (oldItem.isAlarmOn()==newItem.isAlarmOn());
         }
+
+
     };
 
     @NonNull
@@ -75,8 +78,12 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
                     }
                 }
             });
+
+
         }
     }
+
+
 
     public Task getTaskAt(int position){
         return getItem(position);

@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Room;
 
 import androidx.room.TypeConverter;
 
