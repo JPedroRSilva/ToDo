@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Room;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.time.LocalDateTime;
 
-import static com.johnny.todo.LocalDateTimeConverter.toDateString;
+import static com.johnny.todo.Room.LocalDateTimeConverter.toDateString;
 
 @Database(entities = {Task.class}, version = 2, exportSchema = false)
 public abstract class TaskDatabase extends RoomDatabase {

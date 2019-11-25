@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Room;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface TaskDao {
 
     @Insert
-    void insert(Task task);
+    long insert(Task task);
 
     @Update
     void update(Task task);

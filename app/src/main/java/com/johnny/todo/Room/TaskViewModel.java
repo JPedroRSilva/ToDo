@@ -1,4 +1,4 @@
-package com.johnny.todo;
+package com.johnny.todo.Room;
 
 import android.app.Application;
 
@@ -19,8 +19,8 @@ public class TaskViewModel extends AndroidViewModel {
         allTasks = repository.getAllTasks();
     }
 
-    public void insert(Task task){
-        repository.insert(task);
+    public long insert(Task task){
+        return  repository.insert(task);
     }
 
     public void update(Task task){

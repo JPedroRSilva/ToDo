@@ -1,14 +1,12 @@
-package com.johnny.todo;
+package com.johnny.todo.Room;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 
-import static com.johnny.todo.LocalDateTimeConverter.toDate;
-import static com.johnny.todo.LocalDateTimeConverter.toDateString;
+import static com.johnny.todo.Room.LocalDateTimeConverter.toDate;
 
 @Entity(tableName = "task_table")
 public class Task {
