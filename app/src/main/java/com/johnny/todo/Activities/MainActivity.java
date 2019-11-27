@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String Notification_Description = "com.johnny.todo.NOTIFICATION_DESCRIPTION";
     public static final String Notification_Title = "com.johnny.todo.NOTIFICATION_TITLE";
     public static final String Notification_Id = "com.johnny.todo.NOTIFICATION_ID";
+    public static final String Notfication_Time = "com.johnny.todo.NOTIFICATION_TIME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
                 intent.putExtra(AddEditTaskActivity.EXTRA_TIME, toDate(task.getTime()));
                 intent.putExtra(AddEditTaskActivity.EXTRA_ALARM, task.isAlarmOn());
-                Toast.makeText(MainActivity.this, String.valueOf(task.isAlarmOn()), Toast.LENGTH_SHORT).show();
                 startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });

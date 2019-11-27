@@ -21,6 +21,8 @@
                   android:parentActivityName=".Activities.MainActivity">
         </activity>
         <receiver android:name=".Notifications.ReminderReceiver"/>
+        <receiver android:name=".Notifications.SnoozeReceiver"/>
+
     </application>
 
 </manifest>
