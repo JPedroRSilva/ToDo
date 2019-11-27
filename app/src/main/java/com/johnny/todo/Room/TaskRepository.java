@@ -39,6 +39,10 @@ public class TaskRepository{
         new DeleteTaskAsyncTask(taskDao).execute(task);
     }
 
+    public void delete(Integer id){
+        new DeleteTaskByIDAsyncTask(taskDao).execute(id);
+    }
+
     public void deleteAllTasks(){
         new DeleteAllTasksTaskAsyncTask(taskDao).execute();
     }
@@ -89,6 +93,20 @@ public class TaskRepository{
         @Override
         protected Void doInBackground(Task... tasks) {
             taskDao.delete(tasks[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteTaskByIDAsyncTask extends AsyncTask<Integer, Void, Void>{
+        private  TaskDao taskDao;
+
+        private DeleteTaskByIDAsyncTask(TaskDao taskDao){
+            this.taskDao = taskDao;
+        }
+
+        @Override
+        protected Void doInBackground(Integer... Integers) {
+            taskDao.delete(Integers[0]);
             return null;
         }
     }

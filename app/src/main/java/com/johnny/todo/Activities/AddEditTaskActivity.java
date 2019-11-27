@@ -146,6 +146,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
                         String time = hourOfDay + "h:" + minute;
                         tempTime = tempTime.withHour(hourOfDay);
                         tempTime = tempTime.withMinute(minute);
+                        tempTime = tempTime.withSecond(0);
                         timePicker.setText(time);
                     }
                 }, hours, minutes+1, true);
