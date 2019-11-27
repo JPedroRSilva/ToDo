@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import static com.johnny.todo.Activities.MainActivity.Notification_Description;
 import static com.johnny.todo.Activities.MainActivity.Notification_Id;
 import static com.johnny.todo.Activities.MainActivity.Notification_Title;
@@ -21,17 +24,16 @@ public class SnoozeReceiver extends BroadcastReceiver {
         if(id == -1) {
             return;
         }
-
-        int snooze = 10000;
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent newIntent = new Intent(context, ReminderReceiver.class);
         newIntent.setClass(context, ReminderReceiver.class);
-        intent.putExtra(Notification_Title, title);
-        intent.putExtra(Notification_Description, description);
-        intent.putExtra(Notification_Id, id);
-        long time = snooze + System.currentTimeMillis();
+        newIntent.putExtra(Notification_Title, title);
+        newIntent.putExtra(Notification_Description, description);
+        newIntent.putExtra(Notification_Id, id);
+        LocalDateTime time = LocalDateTime.now().plusMinutes(1);
+        long timeMilli = time.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeMilli, pendingIntent);
     }
 }
