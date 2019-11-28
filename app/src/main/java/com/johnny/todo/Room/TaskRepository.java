@@ -9,8 +9,6 @@ import java.util.List;
 
 public class TaskRepository{
 
-    //Comentario só para dar commit com uma mensagem mais descritiva
-
     private TaskDao taskDao;
     private LiveData<List<Task>> allTasks;
 
@@ -37,10 +35,6 @@ public class TaskRepository{
 
     public void delete(Task task){
         new DeleteTaskAsyncTask(taskDao).execute(task);
-    }
-
-    public void delete(Integer id){
-        new DeleteTaskByIDAsyncTask(taskDao).execute(id);
     }
 
     public void deleteAllTasks(){
@@ -93,20 +87,6 @@ public class TaskRepository{
         @Override
         protected Void doInBackground(Task... tasks) {
             taskDao.delete(tasks[0]);
-            return null;
-        }
-    }
-
-    private static class DeleteTaskByIDAsyncTask extends AsyncTask<Integer, Void, Void>{
-        private  TaskDao taskDao;
-
-        private DeleteTaskByIDAsyncTask(TaskDao taskDao){
-            this.taskDao = taskDao;
-        }
-
-        @Override
-        protected Void doInBackground(Integer... Integers) {
-            taskDao.delete(Integers[0]);
             return null;
         }
     }

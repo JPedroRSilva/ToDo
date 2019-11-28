@@ -7,10 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.johnny.todo.R;
-import com.johnny.todo.Room.TaskViewModel;
 
 public class SnoozeActivity extends AppCompatActivity {
-    private TaskViewModel taskViewModel;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 

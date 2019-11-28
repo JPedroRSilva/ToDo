@@ -31,10 +31,6 @@ public class TaskViewModel extends AndroidViewModel {
         repository.delete(task);
     }
 
-    public void delete(Integer id){
-        repository.delete(id);
-    }
-
     public void deleteAllTasks(){
         repository.deleteAllTasks();
     }

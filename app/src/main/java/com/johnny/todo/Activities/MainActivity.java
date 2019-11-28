@@ -10,11 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
+    public static final int DELETE_TASK_REQUEST = 3;
+    public static final int EDIT_TASK_REMINDER_REQUEST = 4;
 
     public static final String Notification_Description = "com.johnny.todo.NOTIFICATION_DESCRIPTION";
     public static final String Notification_Title = "com.johnny.todo.NOTIFICATION_TITLE";
@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
 
+
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 Task task = adapter.getTaskAt(viewHolder.getAdapterPosition());
@@ -111,49 +112,63 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == ADD_TASK_REQUEST && resultCode == RESULT_OK){
-            String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-            LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
-            boolean alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
-            final Task task = new Task(title, description, toDateString(time), alarmOn);
-            int id = (int) taskViewModel.insert(task);
-            if(alarmOn){
-                setReminder(id, time, title, description);
-            }
-        }else if(requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK){
-            int id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
+        if(resultCode == RESULT_OK){
+            String title, description;
+            LocalDateTime time;
+            boolean alarmOn;
+            int id;
+            Task task;
+            switch (requestCode){
+                case ADD_TASK_REQUEST:
+                    title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
+                    description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
+                    time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
+                    alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
+                    task = new Task(title, description, toDateString(time), alarmOn);
+                    id = (int) taskViewModel.insert(task);
+                    if(alarmOn){
+                        setReminder(id, time, title, description);
+                    }
+                break;
 
-            if(id == -1){
-                Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
-                return;
+                case EDIT_TASK_REQUEST:
+                    id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
+
+                    if(id == -1){
+                        Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    boolean changed = data.getBooleanExtra(AddEditTaskActivity.EXTRA_CHANGED, false);
+                    title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
+                    description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
+                    time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
+                    alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
+                    task = new Task(title, description, toDateString(time), alarmOn);
+                    task.setId(id);
+                    taskViewModel.update(task);
+                    if(changed){
+                        if(alarmOn){
+                            setReminder(id, time, title, description);
+                        }else{
+                            cancelReminder(id);
+                        }
+                    }
+                    Toast.makeText(this, "Task Updated" , Toast.LENGTH_SHORT).show();
+                    break;
+
+                case DELETE_TASK_REQUEST:
+                    break;
+
+                case EDIT_TASK_REMINDER_REQUEST:
+                    break;
             }
-            boolean changed = data.getBooleanExtra(AddEditTaskActivity.EXTRA_CHANGED, false);
-            String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-            LocalDateTime time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
-            boolean alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
-            Task task = new Task(title, description, toDateString(time), alarmOn);
-            task.setId(id);
-            taskViewModel.update(task);
-            if(changed){
-                if(alarmOn){
-                    setReminder(id, time, title, description);
-                }else{
-                    cancelReminder(id);
-                }
-            }
-            Toast.makeText(this, "Task Updated" , Toast.LENGTH_SHORT).show();
         }
-        else{
-            Toast.makeText(this, "Task not updated", Toast.LENGTH_SHORT).show();
-        }
-
-
     }
 
 

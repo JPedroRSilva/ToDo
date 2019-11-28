@@ -41,6 +41,7 @@ public class ReminderReceiver extends BroadcastReceiver {
         PendingIntent editSnooze = PendingIntent.getActivity(context, id, snoozeIntent, 0);
 
 
+
         NotificationManager = NotificationManagerCompat.from(context);
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)

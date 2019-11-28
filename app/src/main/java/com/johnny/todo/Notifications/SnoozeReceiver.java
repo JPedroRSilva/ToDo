@@ -30,7 +30,7 @@ public class SnoozeReceiver extends BroadcastReceiver {
         newIntent.putExtra(Notification_Title, title);
         newIntent.putExtra(Notification_Description, description);
         newIntent.putExtra(Notification_Id, id);
-        LocalDateTime time = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime time = LocalDateTime.now().plusMinutes(10);
         long timeMilli = time.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
