@@ -45,6 +45,10 @@ public class TaskRepository{
         return allTasks;
     }
 
+    public LiveData<Task> getTask(int id){
+        return taskDao.getTask(id);
+    }
+
     private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Long>{
         private TaskDao taskDao;
 

@@ -39,18 +39,18 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
-    public static final int DELETE_TASK_REQUEST = 3;
-    public static final int EDIT_TASK_REMINDER_REQUEST = 4;
+    public static final int EDIT_TASK_REMINDER_REQUEST = 3;
 
     public static final String Notification_Description = "com.johnny.todo.NOTIFICATION_DESCRIPTION";
     public static final String Notification_Title = "com.johnny.todo.NOTIFICATION_TITLE";
     public static final String Notification_Id = "com.johnny.todo.NOTIFICATION_ID";
-    public static final String Notfication_Time = "com.johnny.todo.NOTIFICATION_TIME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         FloatingActionButton buttonAddTask = findViewById(R.id.button_add_task);
         buttonAddTask.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, ADD_TASK_REQUEST);
             }
         });
+
+
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -161,17 +163,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Toast.makeText(this, "Task Updated" , Toast.LENGTH_SHORT).show();
                     break;
-
-                case DELETE_TASK_REQUEST:
-                    break;
-
-                case EDIT_TASK_REMINDER_REQUEST:
-                    break;
             }
         }
     }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int id = intent.getIntExtra(Notification_Id, -1);
+        if(id != -1){
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_activity_frame, new SnoozeFragment())
+                    .commit();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

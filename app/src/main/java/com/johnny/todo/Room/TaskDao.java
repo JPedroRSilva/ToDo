@@ -25,4 +25,7 @@ public interface TaskDao {
 
     @Query("SELECT * FROM task_table ORDER BY datetime(time) DESC")
     LiveData<List<Task>> getAllTasks();
+
+    @Query("SELECT * FROM task_table WHERE id = :id")
+    LiveData<Task> getTask(int id);
 }
