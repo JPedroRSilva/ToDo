@@ -20,12 +20,12 @@ public interface TaskDao {
     @Delete
     void delete(Task task);
 
-    @Delete
-    void delete(int id);
-
     @Query("DELETE FROM task_table")
     void deleteAllTasks();
 
     @Query("SELECT * FROM task_table ORDER BY datetime(time) DESC")
     LiveData<List<Task>> getAllTasks();
+
+    @Query("SELECT * FROM task_table WHERE id = :id")
+    LiveData<Task> getTask(int id);
 }

@@ -31,15 +31,15 @@ public class TaskViewModel extends AndroidViewModel {
         repository.delete(task);
     }
 
-    public void delete(Integer id){
-        repository.delete(id);
-    }
-
     public void deleteAllTasks(){
         repository.deleteAllTasks();
     }
 
     public LiveData<List<Task>> getAllTasks(){
         return allTasks;
+    }
+
+    public LiveData<Task> getTask(int id){
+        return repository.getTask(id);
     }
 }
