@@ -1,4 +1,4 @@
-package com.johnny.todo.Activities;
+package com.johnny.todo.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

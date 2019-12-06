@@ -33,10 +33,6 @@ public class Task {
         this.id = id;
     }
 
-    public void setAlarmOn(boolean alarmOn) {
-        this.alarmOn = alarmOn;
-    }
-
     public int getId(){
         return id;
     }

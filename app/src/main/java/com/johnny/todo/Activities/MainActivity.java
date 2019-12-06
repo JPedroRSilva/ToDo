@@ -1,45 +1,26 @@
 package com.johnny.todo.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.johnny.todo.Notifications.ReminderReceiver;
+import com.johnny.todo.Fragments.SnoozeFragment;
+import com.johnny.todo.Fragments.TasksDisplayFragment;
 import com.johnny.todo.R;
-import com.johnny.todo.Room.Task;
 import com.johnny.todo.Room.TaskViewModel;
-import com.johnny.todo.Adapters.TaskAdapter;
-
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-
-import static com.johnny.todo.Room.LocalDateTimeConverter.toDate;
-import static com.johnny.todo.Room.LocalDateTimeConverter.toDateString;
 
 public class MainActivity extends AppCompatActivity {
     private TaskViewModel taskViewModel;
 
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
-    public static final int EDIT_TASK_REMINDER_REQUEST = 3;
+
+    public static final String EXTRA_ID = "com.johnny.todo.EXTRA_ID";
+    public static final String EXTRA_TITLE = "com.johnny.todo.EXTRA_TITLE";
+    public static final String EXTRA_DESCRIPTION = "com.johnny.todo.EXTRA_DESCRIPTION";
+    public static final String EXTRA_TIME = "com.johnny.todo.EXTRA_TIME";
+    public static final String EXTRA_ALARM = "com.johnny.todo.EXTRA_ALARM";
+
 
     public static final String Notification_Description = "com.johnny.todo.NOTIFICATION_DESCRIPTION";
     public static final String Notification_Title = "com.johnny.todo.NOTIFICATION_TITLE";
@@ -50,121 +31,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        FloatingActionButton buttonAddTask = findViewById(R.id.button_add_task);
-        buttonAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
-                startActivityForResult(intent, ADD_TASK_REQUEST);
-            }
-        });
-
-
-
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-
-
-        final TaskAdapter adapter = new TaskAdapter();
-        recyclerView.setAdapter(adapter);
-
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
-            @Override
-            public void onChanged(List<Task> tasks) {
-                adapter.submitList(tasks);
-            }
-        });
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                Task task = adapter.getTaskAt(viewHolder.getAdapterPosition());
-                if(task.isAlarmOn()){
-                    cancelReminder(task.getId());
-                }
-                taskViewModel.delete(task);
-                Toast.makeText(MainActivity.this, "Task deleted", Toast.LENGTH_SHORT).show();
-            }
-
-
-        }).attachToRecyclerView(recyclerView);
-
-        adapter.setOnClickListener(new TaskAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Task task) {
-                Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
-                intent.putExtra(AddEditTaskActivity.EXTRA_ID, task.getId());
-                intent.putExtra(AddEditTaskActivity.EXTRA_TITLE, task.getTitle());
-                intent.putExtra(AddEditTaskActivity.EXTRA_DESCRIPTION, task.getDescription());
-                intent.putExtra(AddEditTaskActivity.EXTRA_TIME, toDate(task.getTime()));
-                intent.putExtra(AddEditTaskActivity.EXTRA_ALARM, task.isAlarmOn());
-                startActivityForResult(intent, EDIT_TASK_REQUEST);
-            }
-        });
-    }
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == RESULT_OK){
-            String title, description;
-            LocalDateTime time;
-            boolean alarmOn;
-            int id;
-            Task task;
-            switch (requestCode){
-                case ADD_TASK_REQUEST:
-                    title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
-                    description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-                    time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
-                    alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
-                    task = new Task(title, description, toDateString(time), alarmOn);
-                    id = (int) taskViewModel.insert(task);
-                    if(alarmOn){
-                        setReminder(id, time, title, description);
-                    }
-                break;
-
-                case EDIT_TASK_REQUEST:
-                    id = data.getIntExtra(AddEditTaskActivity.EXTRA_ID, -1);
-
-                    if(id == -1){
-                        Toast.makeText(this, "Task can't be updated", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    boolean changed = data.getBooleanExtra(AddEditTaskActivity.EXTRA_CHANGED, false);
-                    title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
-                    description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
-                    time = (LocalDateTime) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TIME);
-                    alarmOn = data.getBooleanExtra(AddEditTaskActivity.EXTRA_ALARM, false);
-                    task = new Task(title, description, toDateString(time), alarmOn);
-                    task.setId(id);
-                    taskViewModel.update(task);
-                    if(changed){
-                        if(alarmOn){
-                            setReminder(id, time, title, description);
-                        }else{
-                            cancelReminder(id);
-                        }
-                    }
-                    Toast.makeText(this, "Task Updated" , Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_frame, new TasksDisplayFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -173,47 +45,10 @@ public class MainActivity extends AppCompatActivity {
         int id = intent.getIntExtra(Notification_Id, -1);
         if(id != -1){
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.main_activity_frame, new SnoozeFragment())
+                    .replace(R.id.main_frame, new SnoozeFragment())
                     .commit();
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.mainmenu, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.delete_all_tasks:
-                taskViewModel.deleteAllTasks();
-                Toast.makeText(this, "All tasks deleted", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void setReminder(long Lid, LocalDateTime reminder, String title , String description){
-        int id = (int) Lid;
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, ReminderReceiver.class);
-        intent.putExtra(Notification_Title, title);
-        intent.putExtra(Notification_Description, description);
-        intent.putExtra(Notification_Id, id);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli(), pendingIntent);
-    }
-
-    public void cancelReminder(int id){
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, ReminderReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        alarmManager.cancel(pendingIntent);
-    }
 }
