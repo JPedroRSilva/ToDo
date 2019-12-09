@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.johnny.todo.Activities.MainActivity;
-import com.johnny.todo.Activities.SnoozeFragment;
 import com.johnny.todo.R;
 
 import static com.johnny.todo.Activities.App.CHANNEL_ID;
