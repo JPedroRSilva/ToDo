@@ -1,5 +1,6 @@
 package com.johnny.todo.Activities;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -12,8 +13,7 @@ import com.johnny.todo.Room.TaskViewModel;
 public class MainActivity extends AppCompatActivity {
     private TaskViewModel taskViewModel;
 
-    public static final int ADD_TASK_REQUEST = 1;
-    public static final int EDIT_TASK_REQUEST = 2;
+    public static final String TASK_DISPLAY = "com.johnny.todo.TASK_DISPLAY";
 
     public static final String EXTRA_ID = "com.johnny.todo.EXTRA_ID";
     public static final String EXTRA_TITLE = "com.johnny.todo.EXTRA_TITLE";
@@ -34,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_frame, new TasksDisplayFragment())
-                .addToBackStack(null)
+                .replace(R.id.main_frame, new TasksDisplayFragment(), TASK_DISPLAY)
                 .commit();
+
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
     }
 
     @Override
@@ -50,5 +51,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if(getSupportFragmentManager().getBackStackEntryCount() > 1)
+            getSupportFragmentManager().popBackStack();
+        else super.onBackPressed();
+    }
 }

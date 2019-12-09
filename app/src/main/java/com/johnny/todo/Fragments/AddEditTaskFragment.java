@@ -8,6 +8,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,10 +25,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.johnny.todo.Activities.MainActivity;
@@ -38,6 +37,7 @@ import com.johnny.todo.Room.TaskViewModel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Date;
 
 import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_ALARM;
 import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_DESCRIPTION;
@@ -46,7 +46,7 @@ import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_TITLE;
 import static com.johnny.todo.Activities.MainActivity.Notification_Description;
 import static com.johnny.todo.Activities.MainActivity.Notification_Id;
 import static com.johnny.todo.Activities.MainActivity.Notification_Title;
-import static com.johnny.todo.Room.LocalDateTimeConverter.toDate;
+import static com.johnny.todo.Activities.MainActivity.TASK_DISPLAY;
 import static com.johnny.todo.Room.LocalDateTimeConverter.toDateString;
 
 public class AddEditTaskFragment extends Fragment {
@@ -60,7 +60,6 @@ public class AddEditTaskFragment extends Fragment {
     private LocalDateTime tempTime;
     private String title;
     private String description;
-    private LocalDateTime time;
     private boolean isAlarmOn;
     private int id;
 
@@ -89,30 +88,32 @@ public class AddEditTaskFragment extends Fragment {
         editTextDescription.setText("");
         tempTime = LocalDateTime.now();
 
-        ((AppCompatActivity)activity).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
-
         Bundle data = this.getArguments();
         id = data.getInt(MainActivity.EXTRA_ID, -1);
 
         if(id != -1){
             title = data.getString(EXTRA_TITLE);
             description = data.getString(EXTRA_DESCRIPTION);
-            time = (LocalDateTime) data.getSerializable(EXTRA_TIME);
+            tempTime = (LocalDateTime) data.getSerializable(EXTRA_TIME);
             isAlarmOn = data.getBoolean(EXTRA_ALARM);
 
             activity.setTitle("Edit Task");
             editTextTile.setText(title);
             editTextDescription.setText(description);
-            String hours = time.getHour() + "h: " + time.getMinute()+ "m";
-            String date = time.getDayOfMonth() + "/" + time.getMonthValue()+ "/" + time.getYear();
+            String hours = tempTime.getHour() + "h: " + tempTime.getMinute()+ "m";
+            String date = tempTime.getDayOfMonth() + "/" + tempTime.getMonthValue()+ "/" + tempTime.getYear();
             datePicker.setText(date);
             timePicker.setText(hours);
+            datePicker.setVisibility(isAlarmOn ? View.VISIBLE : View.INVISIBLE);
+            timePicker.setVisibility(isAlarmOn ? View.VISIBLE : View.INVISIBLE);
             reminderSwitch.setChecked(isAlarmOn);
         }else {
             activity.setTitle("Add Task");
             LocalDateTime temp = LocalDateTime.now();
             String hours = temp.getHour() + "h: " + temp.getMinute()+ "m";
             String date = temp.getDayOfMonth() + "/" + temp.getMonthValue()+ "/" + temp.getYear();
+            datePicker.setVisibility(View.INVISIBLE);
+            timePicker.setVisibility(View.INVISIBLE);
             datePicker.setText(date);
             timePicker.setText(hours);
             reminderSwitch.setChecked(false);
@@ -136,9 +137,7 @@ public class AddEditTaskFragment extends Fragment {
             public void onClick(View v) {
                 int year, month, day;
                 if(id != -1){
-                    if(LocalDateTime.now().isBefore(time)){
-                        tempTime = time;
-                    }else{
+                    if(LocalDateTime.now().isAfter(tempTime)){
                         LocalDateTime aux = LocalDateTime.now();
                         tempTime.withYear(aux.getYear());
                         tempTime.withMonth(aux.getMonthValue());
@@ -174,9 +173,7 @@ public class AddEditTaskFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(id != -1){
-                    if(LocalDateTime.now().isBefore(time)){
-                        tempTime = time;
-                    }else{
+                    if(LocalDateTime.now().isAfter(tempTime)){
                         LocalDateTime aux = LocalDateTime.now();
                         tempTime.withYear(aux.getMinute());
                         tempTime.withMonth(aux.getHour());
@@ -199,7 +196,7 @@ public class AddEditTaskFragment extends Fragment {
                         tempTime = tempTime.withSecond(0);
                         timePicker.setText(time);
                     }
-                }, hours, minutes+1, true);
+                }, hours, minutes+1, DateFormat.is24HourFormat(getContext()));
                 timePickerDialog.setTitle("Select hour and minutes");
                 timePickerDialog.show();
             }
@@ -236,9 +233,14 @@ public class AddEditTaskFragment extends Fragment {
             taskViewModel.insert(editedTask);
         }
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        TasksDisplayFragment tasksDisplayFragment = (TasksDisplayFragment) fragmentManager.findFragmentByTag(TASK_DISPLAY);
+
+        if(tasksDisplayFragment != null){
+            fragmentManager.beginTransaction().remove(tasksDisplayFragment).commit();
+            fragmentManager.popBackStack();
+        }
         fragmentManager.beginTransaction()
-                .replace(R.id.main_frame, new TasksDisplayFragment())
-                .addToBackStack(null)
+                .replace(R.id.main_frame, new TasksDisplayFragment(), TASK_DISPLAY)
                 .commit();
     }
 

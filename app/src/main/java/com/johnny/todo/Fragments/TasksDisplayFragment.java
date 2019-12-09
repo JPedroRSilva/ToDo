@@ -155,4 +155,10 @@ public class TasksDisplayFragment extends Fragment {
 
         alarmManager.cancel(pendingIntent);
     }
+
+    @Override
+    public void onResume() {
+        getActivity().setTitle("ToDo");
+        super.onResume();
+    }
 }
