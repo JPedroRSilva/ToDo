@@ -37,12 +37,11 @@ import com.johnny.todo.Room.TaskViewModel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_ALARM;
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_DESCRIPTION;
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_TIME;
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_TITLE;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_ALARM;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_DESCRIPTION;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_TIME;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_TITLE;
 import static com.johnny.todo.Activities.MainActivity.Notification_Description;
 import static com.johnny.todo.Activities.MainActivity.Notification_Id;
 import static com.johnny.todo.Activities.MainActivity.Notification_Title;
@@ -139,15 +138,15 @@ public class AddEditTaskFragment extends Fragment {
                 if(id != -1){
                     if(LocalDateTime.now().isAfter(tempTime)){
                         LocalDateTime aux = LocalDateTime.now();
-                        tempTime.withYear(aux.getYear());
-                        tempTime.withMonth(aux.getMonthValue());
-                        tempTime.withDayOfMonth(aux.getDayOfMonth());
+                        tempTime = tempTime.withYear(aux.getYear());
+                        tempTime = tempTime.withMonth(aux.getMonthValue());
+                        tempTime = tempTime.withDayOfMonth(aux.getDayOfMonth());
                     }
                 }else{
                     LocalDateTime aux = LocalDateTime.now();
-                    tempTime.withYear(aux.getYear());
-                    tempTime.withMonth(aux.getMonthValue());
-                    tempTime.withDayOfMonth(aux.getDayOfMonth());
+                    tempTime = tempTime.withYear(aux.getYear());
+                    tempTime = tempTime.withMonth(aux.getMonthValue());
+                    tempTime = tempTime.withDayOfMonth(aux.getDayOfMonth());
                 }
                 year = tempTime.getYear();
                 month = tempTime.getMonthValue();
@@ -175,13 +174,13 @@ public class AddEditTaskFragment extends Fragment {
                 if(id != -1){
                     if(LocalDateTime.now().isAfter(tempTime)){
                         LocalDateTime aux = LocalDateTime.now();
-                        tempTime.withYear(aux.getMinute());
-                        tempTime.withMonth(aux.getHour());
+                        tempTime = tempTime.withMinute(aux.getMinute());
+                        tempTime = tempTime.withHour(aux.getHour());
                     }
                 }else{
                     LocalDateTime aux = LocalDateTime.now();
-                    tempTime.withYear(aux.getMinute());
-                    tempTime.withMonth(aux.getHour());
+                    tempTime = tempTime.withMinute(aux.getMinute());
+                    tempTime = tempTime.withHour(aux.getHour());
                 }
                 int hours, minutes;
                 hours = tempTime.getHour();
