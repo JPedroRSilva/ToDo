@@ -1,5 +1,6 @@
 package com.johnny.todo.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ public class SnoozeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        Toast.makeText(getContext(), "Fragment", Toast.LENGTH_SHORT).show();
+
+        Bundle data = getArguments();
     }
 }

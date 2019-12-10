@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -101,7 +102,12 @@ public class AddEditTaskFragment extends Fragment {
             editTextDescription.setText(description);
             String hours = tempTime.getHour() + "h: " + tempTime.getMinute()+ "m";
             String date = tempTime.getDayOfMonth() + "/" + tempTime.getMonthValue()+ "/" + tempTime.getYear();
-            datePicker.setText(date);
+            if(DateUtils.isToday(tempTime.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())){
+                datePicker.setText(R.string.today);
+            }
+            else{
+                datePicker.setText(date);
+            }
             timePicker.setText(hours);
             datePicker.setVisibility(isAlarmOn ? View.VISIBLE : View.INVISIBLE);
             timePicker.setVisibility(isAlarmOn ? View.VISIBLE : View.INVISIBLE);
@@ -110,10 +116,9 @@ public class AddEditTaskFragment extends Fragment {
             activity.setTitle("Add Task");
             LocalDateTime temp = LocalDateTime.now();
             String hours = temp.getHour() + "h: " + temp.getMinute()+ "m";
-            String date = temp.getDayOfMonth() + "/" + temp.getMonthValue()+ "/" + temp.getYear();
             datePicker.setVisibility(View.INVISIBLE);
             timePicker.setVisibility(View.INVISIBLE);
-            datePicker.setText(date);
+            datePicker.setText(R.string.today);
             timePicker.setText(hours);
             reminderSwitch.setChecked(false);
         }
@@ -159,10 +164,15 @@ public class AddEditTaskFragment extends Fragment {
                         tempTime = tempTime.withDayOfMonth(dayOfMonth);
                         tempTime = tempTime.withMonth(month+1);
                         tempTime = tempTime.withYear(year);
-                        datePicker.setText(date);
+                        if(DateUtils.isToday(tempTime.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())){
+                            datePicker.setText(R.string.today);
+                        }
+                        else{
+                            datePicker.setText(date);
+                        }
                     }
                 }, year, month-1, day);
-                datePickerDialog.setTitle("Select date");
+                datePickerDialog.setTitle("Select the date");
                 datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
@@ -196,7 +206,7 @@ public class AddEditTaskFragment extends Fragment {
                         timePicker.setText(time);
                     }
                 }, hours, minutes+1, DateFormat.is24HourFormat(getContext()));
-                timePickerDialog.setTitle("Select hour and minutes");
+                timePickerDialog.setTitle("Select the hour and minutes");
                 timePickerDialog.show();
             }
         });

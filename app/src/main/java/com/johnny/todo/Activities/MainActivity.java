@@ -2,7 +2,11 @@ package com.johnny.todo.Activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
+
+import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
 import com.johnny.todo.Fragments.SnoozeFragment;
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String Notification_Description = "com.johnny.todo.NOTIFICATION_DESCRIPTION";
     public static final String Notification_Title = "com.johnny.todo.NOTIFICATION_TITLE";
     public static final String Notification_Id = "com.johnny.todo.NOTIFICATION_ID";
+    public static final String Notification_Minutes = "com.johnny.todo.Notification_Minutes";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +49,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         int id = intent.getIntExtra(Notification_Id, -1);
+        String title = intent.getStringExtra(Notification_Title);
+        String description = intent.getStringExtra(Notification_Description);
+        Fragment snoozeFragment = new SnoozeFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_ID, id);
+        bundle.putString(EXTRA_TITLE, title);
+        bundle.putString(EXTRA_DESCRIPTION, description);
+        snoozeFragment.setArguments(bundle);
         if(id != -1){
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_frame, new SnoozeFragment())
+                    .replace(R.id.main_frame, snoozeFragment)
                     .commit();
         }
     }
