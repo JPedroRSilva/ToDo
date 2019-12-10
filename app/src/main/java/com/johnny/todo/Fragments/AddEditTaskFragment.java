@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,12 +38,11 @@ import com.johnny.todo.Room.TaskViewModel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_ALARM;
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_DESCRIPTION;
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_TIME;
-import static com.johnny.todo.Activities.AddEditTaskActivity.EXTRA_TITLE;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_ALARM;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_DESCRIPTION;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_TIME;
+import static com.johnny.todo.Activities.MainActivity.EXTRA_TITLE;
 import static com.johnny.todo.Activities.MainActivity.Notification_Description;
 import static com.johnny.todo.Activities.MainActivity.Notification_Id;
 import static com.johnny.todo.Activities.MainActivity.Notification_Title;
@@ -102,7 +102,12 @@ public class AddEditTaskFragment extends Fragment {
             editTextDescription.setText(description);
             String hours = tempTime.getHour() + "h: " + tempTime.getMinute()+ "m";
             String date = tempTime.getDayOfMonth() + "/" + tempTime.getMonthValue()+ "/" + tempTime.getYear();
-            datePicker.setText(date);
+            if(DateUtils.isToday(tempTime.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())){
+                datePicker.setText(R.string.today);
+            }
+            else{
+                datePicker.setText(date);
+            }
             timePicker.setText(hours);
             datePicker.setVisibility(isAlarmOn ? View.VISIBLE : View.INVISIBLE);
             timePicker.setVisibility(isAlarmOn ? View.VISIBLE : View.INVISIBLE);
@@ -111,10 +116,9 @@ public class AddEditTaskFragment extends Fragment {
             activity.setTitle("Add Task");
             LocalDateTime temp = LocalDateTime.now();
             String hours = temp.getHour() + "h: " + temp.getMinute()+ "m";
-            String date = temp.getDayOfMonth() + "/" + temp.getMonthValue()+ "/" + temp.getYear();
             datePicker.setVisibility(View.INVISIBLE);
             timePicker.setVisibility(View.INVISIBLE);
-            datePicker.setText(date);
+            datePicker.setText(R.string.today);
             timePicker.setText(hours);
             reminderSwitch.setChecked(false);
         }
@@ -139,15 +143,15 @@ public class AddEditTaskFragment extends Fragment {
                 if(id != -1){
                     if(LocalDateTime.now().isAfter(tempTime)){
                         LocalDateTime aux = LocalDateTime.now();
-                        tempTime.withYear(aux.getYear());
-                        tempTime.withMonth(aux.getMonthValue());
-                        tempTime.withDayOfMonth(aux.getDayOfMonth());
+                        tempTime = tempTime.withYear(aux.getYear());
+                        tempTime = tempTime.withMonth(aux.getMonthValue());
+                        tempTime = tempTime.withDayOfMonth(aux.getDayOfMonth());
                     }
                 }else{
                     LocalDateTime aux = LocalDateTime.now();
-                    tempTime.withYear(aux.getYear());
-                    tempTime.withMonth(aux.getMonthValue());
-                    tempTime.withDayOfMonth(aux.getDayOfMonth());
+                    tempTime = tempTime.withYear(aux.getYear());
+                    tempTime = tempTime.withMonth(aux.getMonthValue());
+                    tempTime = tempTime.withDayOfMonth(aux.getDayOfMonth());
                 }
                 year = tempTime.getYear();
                 month = tempTime.getMonthValue();
@@ -160,10 +164,15 @@ public class AddEditTaskFragment extends Fragment {
                         tempTime = tempTime.withDayOfMonth(dayOfMonth);
                         tempTime = tempTime.withMonth(month+1);
                         tempTime = tempTime.withYear(year);
-                        datePicker.setText(date);
+                        if(DateUtils.isToday(tempTime.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())){
+                            datePicker.setText(R.string.today);
+                        }
+                        else{
+                            datePicker.setText(date);
+                        }
                     }
                 }, year, month-1, day);
-                datePickerDialog.setTitle("Select date");
+                datePickerDialog.setTitle("Select the date");
                 datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
@@ -175,13 +184,13 @@ public class AddEditTaskFragment extends Fragment {
                 if(id != -1){
                     if(LocalDateTime.now().isAfter(tempTime)){
                         LocalDateTime aux = LocalDateTime.now();
-                        tempTime.withYear(aux.getMinute());
-                        tempTime.withMonth(aux.getHour());
+                        tempTime = tempTime.withMinute(aux.getMinute());
+                        tempTime = tempTime.withHour(aux.getHour());
                     }
                 }else{
                     LocalDateTime aux = LocalDateTime.now();
-                    tempTime.withYear(aux.getMinute());
-                    tempTime.withMonth(aux.getHour());
+                    tempTime = tempTime.withMinute(aux.getMinute());
+                    tempTime = tempTime.withHour(aux.getHour());
                 }
                 int hours, minutes;
                 hours = tempTime.getHour();
@@ -197,7 +206,7 @@ public class AddEditTaskFragment extends Fragment {
                         timePicker.setText(time);
                     }
                 }, hours, minutes+1, DateFormat.is24HourFormat(getContext()));
-                timePickerDialog.setTitle("Select hour and minutes");
+                timePickerDialog.setTitle("Select the hour and minutes");
                 timePickerDialog.show();
             }
         });

@@ -14,6 +14,8 @@ import com.johnny.todo.Activities.MainActivity;
 import com.johnny.todo.R;
 
 import static com.johnny.todo.Activities.App.CHANNEL_ID;
+import static com.johnny.todo.Activities.MainActivity.Notification_Minutes;
+
 public class ReminderReceiver extends BroadcastReceiver {
 
     NotificationManagerCompat NotificationManager;
@@ -27,15 +29,28 @@ public class ReminderReceiver extends BroadcastReceiver {
 
         if(id == -1) return;
 
-        Intent broadcastIntentAction = new Intent(context, SnoozeReceiver.class);
-        broadcastIntentAction.setClass(context, SnoozeReceiver.class);
-        broadcastIntentAction.putExtra(MainActivity.Notification_Title,title);
-        broadcastIntentAction.putExtra(MainActivity.Notification_Description,description);
-        broadcastIntentAction.putExtra(MainActivity.Notification_Id,id);
-        PendingIntent actionIntent = PendingIntent.getBroadcast(context, id,
-                broadcastIntentAction, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        Intent action10 = new Intent(context, SnoozeReceiver.class);
+        Intent action30 = new Intent(context, SnoozeReceiver.class);
+        Intent action60 = new Intent(context, SnoozeReceiver.class);
         Intent snoozeIntent = new Intent(context, MainActivity.class);
+        action10.setClass(context, SnoozeReceiver.class);
+        action10.putExtra(MainActivity.Notification_Title,title);
+        action10.putExtra(MainActivity.Notification_Description,description);
+        action10.putExtra(MainActivity.Notification_Id,id);
+        action10.putExtras(action10);
+        action30.putExtras(action10);
+        action60.putExtras(action10);
+        snoozeIntent.putExtras(action10);
+        action10.putExtra(Notification_Minutes, 10);
+        action30.putExtra(Notification_Minutes, 30);
+        action60.putExtra(Notification_Minutes, 60);
+        PendingIntent pendingAction10 = PendingIntent.getBroadcast(context, id,
+                action10, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingAction30 = PendingIntent.getBroadcast(context, id,
+                action10, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingAction60 = PendingIntent.getBroadcast(context, id,
+                action10, PendingIntent.FLAG_UPDATE_CURRENT);
+
         snoozeIntent.putExtra(MainActivity.Notification_Id, id);
         PendingIntent editSnooze = PendingIntent.getActivity(context, id, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -49,7 +64,9 @@ public class ReminderReceiver extends BroadcastReceiver {
                 .setContentText(description)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setContentIntent(editSnooze)
-                .addAction(R.drawable.ic_add_alarm_black_24dp, "Snooze 10 min", actionIntent)
+                .addAction(R.drawable.ic_add_alarm_black_24dp, "+10 min", pendingAction10)
+                .addAction(R.drawable.ic_add_alarm_black_24dp, "+30 min", pendingAction30)
+                .addAction(R.drawable.ic_add_alarm_black_24dp, "+1 hour", pendingAction60)
                 .setColor(Color.BLUE)
                 .setAutoCancel(true)
                 .build();

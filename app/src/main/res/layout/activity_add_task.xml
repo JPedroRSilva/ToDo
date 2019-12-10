@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".Activities.AddEditTaskActivity">
+    android:padding="16dp">
 
     <EditText
         android:id="@+id/edit_text_title"
@@ -14,34 +11,41 @@
         android:layout_height="wrap_content"
         android:hint="@string/title"
         android:inputType="text"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="146dp" />
+        android:layout_alignParentTop="true"
+        android:importantForAutofill="no" />
 
     <EditText
-
         android:id="@+id/edit_text_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/description"
         android:inputType="textMultiLine"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="77dp" />
+        android:layout_below="@+id/edit_text_title"
+        android:importantForAutofill="no" />
 
     <Switch
+        android:hint="@string/set_reminder"
         android:id="@+id/switch_setReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="end"/>
+        android:gravity="end"
+        android:layout_below="@+id/edit_text_description"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/time_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="bottom" />
+        android:layout_toEndOf="@id/date_picker"
+        android:layout_below="@id/switch_setReminder"
+        android:layout_marginStart="20dp"
+        />
 
     <TextView
         android:id="@+id/date_picker"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/switch_setReminder"/>
 
-</LinearLayout>
+</RelativeLayout>

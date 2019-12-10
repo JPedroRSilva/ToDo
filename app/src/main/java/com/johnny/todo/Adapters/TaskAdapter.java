@@ -1,5 +1,6 @@
 package com.johnny.todo.Adapters;
 
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.johnny.todo.R;
 import com.johnny.todo.Room.Task;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+import static com.johnny.todo.Room.LocalDateTimeConverter.toDate;
 
 public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
     private OnItemClickListener listener;
@@ -51,7 +57,14 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         holder.textViewTitle.setText(currentTask.getTitle());
         holder.textViewDescrition.setText(currentTask.getDescription());
         if(currentTask.isAlarmOn()) {
-            holder.textViewTime.setText(currentTask.timeToFormatedString());
+            LocalDateTime teste =  toDate(currentTask.getTime());
+            if(DateUtils.isToday(teste.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())){
+                String res = "Today, " + teste.getHour() + "h:" + teste.getMinute() + "m";
+                holder.textViewTime.setText(res);
+            }
+            else{
+                holder.textViewTime.setText(currentTask.timeToFormatedString());
+            }
         }else{
             holder.textViewTime.setText("");
         }
